@@ -8,6 +8,7 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import type { Task } from "../types/Task";
+import ROUTES from "../router/routes";
 
 interface TaskProps {
   task: Task;
@@ -27,7 +28,7 @@ function TaskCard({ task }: TaskProps) {
     >
       <CardActionArea
         onClick={() => {
-          navigate("/task/" + task.id);
+          navigate(ROUTES.TASK_PAGE + task.id);
         }}
       >
         <CardContent>

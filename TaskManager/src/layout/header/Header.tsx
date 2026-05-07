@@ -9,7 +9,9 @@ import {
 import MenuIcon from "@mui/icons-material/Menu";
 import NavItem from "../../router/NavItem";
 import ROUTES from "../../router/routes";
+import { useNavigate } from "react-router-dom";
 function Header() {
+  const navigate = useNavigate();
   return (
     <AppBar position="static" color="primary">
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -31,7 +33,12 @@ function Header() {
             <NavItem to={ROUTES.ABOUT} label="About" />
             <NavItem to={ROUTES.CONTACT} label="Contact" />
           </Box>
-          <Button variant="outlined" color="inherit" sx={{ ml: 2 }}>
+          <Button
+            onClick={() => navigate(ROUTES.LOGIN)}
+            variant="outlined"
+            color="inherit"
+            sx={{ ml: 2 }}
+          >
             Log In
           </Button>
         </Box>
