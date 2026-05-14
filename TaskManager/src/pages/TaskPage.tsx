@@ -10,7 +10,6 @@ import {
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import tasks from "../data/tasksList";
 import type { Task } from "../types/Task";
 import { getPriorityColor, getStatusColor } from "../utils/tasksHelpers";
 
@@ -20,7 +19,14 @@ export default function TaskPage() {
 
   useEffect(() => {
     if (id) {
-      setTask(tasks.find((t: Task) => t.id === id));
+      try {
+        const tasks = JSON.parse(localStorage.getItem("tasks") ?? "");
+        const savedTask = tasks.find((t: Task) => t.id === id);
+        savedTask.dueDate = new Date(savedTask.dueDate);
+        setTask(savedTask);
+      } catch (e) {
+        console.log("tasks is not a valid json");
+      }
     }
   }, [id]);
 

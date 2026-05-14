@@ -21,11 +21,6 @@ function HomePage() {
     }
   }, []);
 
-  // פונקציה שהופכת את הסטייט (מ-true ל-false ולהפך)
-  const handleToggle = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   const handleAddNewTask = (task: Task) => {
     const newTasks = [...tasks, { ...task, id: crypto.randomUUID() }];
     setTasks(newTasks);
@@ -38,6 +33,18 @@ function HomePage() {
     localStorage.setItem("tasks", JSON.stringify(newTasks));
   };
 
+  const handleDeleteTask = (id: string) => {
+    if (confirm("האם את/ה בטוח/ה שברצונך למחוק את המשימה?")) {
+      const newTasks = tasks.filter((t) => t.id !== id);
+      setTasks(newTasks);
+      localStorage.setItem("tasks", JSON.stringify(newTasks));
+    }
+  };
+
+  // פונקציה שהופכת את הסטייט (מ-true ל-false ולהפך)
+  const handleToggle = () => {
+    setIsOpen((prev) => !prev);
+  };
   return (
     <Box sx={{ p: 3, pb: 10 }}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -45,7 +52,12 @@ function HomePage() {
       </Typography>
 
       {tasks.map((t) => (
-        <TaskCard key={t.id} task={t} handleEditTask={handleEditTask} />
+        <TaskCard
+          key={t.id}
+          task={t}
+          handleEditTask={handleEditTask}
+          handleDeleteTask={handleDeleteTask}
+        />
       ))}
 
       {/* כפתור ה-FAB של MUI */}

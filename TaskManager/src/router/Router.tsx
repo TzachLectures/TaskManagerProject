@@ -6,6 +6,7 @@ import ROUTES from "./routes";
 import TaskPage from "../pages/TaskPage";
 import LoginPage from "../pages/LoginPage";
 import RegisterPage from "../pages/RegisterPage";
+import ExamplePage from "../pages/ExamplePage";
 
 function Router() {
   return (
@@ -16,6 +17,7 @@ function Router() {
       <Route path={ROUTES.TASK_PAGE + ":id"} element={<TaskPage />} />
       <Route path={ROUTES.LOGIN} element={<LoginPage />} />
       <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+      <Route path={"/sandbox"} element={<ExamplePage />} />
     </Routes>
   );
 }

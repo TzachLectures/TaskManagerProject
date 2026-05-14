@@ -14,12 +14,18 @@ import ROUTES from "../router/routes";
 import EditIcon from "@mui/icons-material/Edit";
 import TaskFormDialog from "./TaskFormDialog";
 import { useState } from "react";
+import ClearIcon from "@mui/icons-material/Clear";
+import ThumbUpIcon from "@mui/icons-material/ThumbUp";
+import ThumbDownIcon from "@mui/icons-material/ThumbDown";
+import useCounter from "../hooks/useCounter";
 interface TaskProps {
   task: Task;
   handleEditTask: (data: Task) => void;
+  handleDeleteTask: (id: string) => void;
 }
-function TaskCard({ task, handleEditTask }: TaskProps) {
+function TaskCard({ task, handleEditTask, handleDeleteTask }: TaskProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const { handleInc, handleDec, count } = useCounter();
   const navigate = useNavigate();
   return (
     <Card
@@ -58,6 +64,28 @@ function TaskCard({ task, handleEditTask }: TaskProps) {
         <IconButton onClick={() => setIsOpen(true)} aria-label="Edit task">
           <EditIcon />
         </IconButton>
+        <IconButton>
+          <ClearIcon
+            sx={{ color: "red" }}
+            onClick={() => handleDeleteTask(task.id)}
+            aria-label="Delete task"
+          />
+        </IconButton>
+        <IconButton>
+          <ThumbUpIcon
+            sx={{ color: "blue" }}
+            onClick={handleInc}
+            aria-label="Like"
+          />
+        </IconButton>
+        <IconButton>
+          <ThumbDownIcon
+            sx={{ color: "red" }}
+            onClick={handleDec}
+            aria-label="DisLike"
+          />
+        </IconButton>
+        <Typography>{count}</Typography>
       </CardActions>
       {isOpen && (
         <TaskFormDialog
