@@ -41,6 +41,14 @@ function Header() {
           >
             Log In
           </Button>
+          <Button
+            onClick={() => navigate(ROUTES.REGISTER)}
+            variant="outlined"
+            color="inherit"
+            sx={{ ml: 2 }}
+          >
+            Register
+          </Button>
         </Box>
       </Toolbar>
     </AppBar>

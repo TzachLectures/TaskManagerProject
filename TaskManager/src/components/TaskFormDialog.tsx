@@ -14,11 +14,18 @@ import type { Task } from "../types/Task";
 interface TaskFormDialogProps {
   open: boolean;
   onClose: () => void;
+  initialValues?: Task;
+  handleSave: (data: Task) => void;
 }
 
-function TaskFormDialog({ open, onClose }: TaskFormDialogProps) {
+function TaskFormDialog({
+  open,
+  onClose,
+  initialValues,
+  handleSave,
+}: TaskFormDialogProps) {
   const { control, handleSubmit, reset } = useForm<Task>({
-    defaultValues: {
+    defaultValues: initialValues ?? {
       title: "",
       description: "",
       status: "pending",
@@ -29,7 +36,7 @@ function TaskFormDialog({ open, onClose }: TaskFormDialogProps) {
 
   const onSubmit = (data: Task) => {
     // הדפסת האובייקט לקונסול כפי שביקשת
-    console.log("New Task Data:", { ...data, id: crypto.randomUUID() });
+    handleSave(data);
 
     // איפוס הטופס וסגירה
     reset();
@@ -38,7 +45,9 @@ function TaskFormDialog({ open, onClose }: TaskFormDialogProps) {
 
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>הוספת משימה חדשה</DialogTitle>
+      <DialogTitle>
+        {initialValues ? "עריכת משימה" : "הוספת משימה חדשה"}
+      </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent dividers>
           <Stack spacing={3}>
@@ -128,7 +137,7 @@ function TaskFormDialog({ open, onClose }: TaskFormDialogProps) {
             ביטול
           </Button>
           <Button type="submit" variant="contained" color="primary">
-            צור משימה
+            {initialValues ? "עריכה" : "צור משימה"}
           </Button>
         </DialogActions>
       </form>

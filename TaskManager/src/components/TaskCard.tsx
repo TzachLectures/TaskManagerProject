@@ -2,18 +2,24 @@ import {
   Box,
   Card,
   CardActionArea,
+  CardActions,
   CardContent,
   Chip,
+  IconButton,
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import type { Task } from "../types/Task";
 import ROUTES from "../router/routes";
-
+import EditIcon from "@mui/icons-material/Edit";
+import TaskFormDialog from "./TaskFormDialog";
+import { useState } from "react";
 interface TaskProps {
   task: Task;
+  handleEditTask: (data: Task) => void;
 }
-function TaskCard({ task }: TaskProps) {
+function TaskCard({ task, handleEditTask }: TaskProps) {
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   return (
     <Card
@@ -48,6 +54,19 @@ function TaskCard({ task }: TaskProps) {
           />
         </Box>
       </CardActionArea>
+      <CardActions>
+        <IconButton onClick={() => setIsOpen(true)} aria-label="Edit task">
+          <EditIcon />
+        </IconButton>
+      </CardActions>
+      {isOpen && (
+        <TaskFormDialog
+          open={isOpen}
+          onClose={() => setIsOpen(false)}
+          initialValues={task}
+          handleSave={handleEditTask}
+        />
+      )}
     </Card>
   );
 }
