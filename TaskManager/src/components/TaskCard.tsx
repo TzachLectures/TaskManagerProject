@@ -17,7 +17,7 @@ import { useState, useEffect } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
-import useCounter from "../hooks/useCounter";
+
 interface TaskProps {
   task: Task;
   handleEditTask: (data: Task) => void;
@@ -31,12 +31,7 @@ function TaskCard({
   updateLikes,
 }: TaskProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { handleInc, handleDec, count } = useCounter(task.likes);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    updateLikes(task.id, count);
-  }, [count]);
 
   return (
     <Card
@@ -85,14 +80,14 @@ function TaskCard({
         <IconButton>
           <ThumbUpIcon
             sx={{ color: "blue" }}
-            onClick={handleInc}
+            onClick={() => updateLikes(task.id, "inc")}
             aria-label="Like"
           />
         </IconButton>
         <IconButton>
           <ThumbDownIcon
             sx={{ color: "red" }}
-            onClick={handleDec}
+            onClick={() => updateLikes(task.id, "dec")}
             aria-label="DisLike"
           />
         </IconButton>
