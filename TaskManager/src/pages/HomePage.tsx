@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { Box, Fab, Typography } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add"; // וודא שהתקנת את חבילת האייקונים
 import CloseIcon from "@mui/icons-material/Close";
@@ -24,6 +24,7 @@ function HomePage() {
   const handleToggle = () => {
     setIsOpen((prev) => !prev);
   };
+
   return (
     <Box sx={{ p: 3, pb: 10 }}>
       <Typography variant="h4" component="h1" gutterBottom>
@@ -66,4 +67,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default memo(HomePage);

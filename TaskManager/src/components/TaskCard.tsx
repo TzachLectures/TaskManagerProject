@@ -13,7 +13,7 @@ import type { Task } from "../types/Task";
 import ROUTES from "../router/routes";
 import EditIcon from "@mui/icons-material/Edit";
 import TaskFormDialog from "./TaskFormDialog";
-import { useState, useEffect } from "react";
+import { useState, memo } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -22,7 +22,7 @@ interface TaskProps {
   task: Task;
   handleEditTask: (data: Task) => void;
   handleDeleteTask: (id: string) => void;
-  updateLikes: (id: string, newLikes: number) => void;
+  updateLikes: (id: string, action: "inc" | "dec") => void;
 }
 function TaskCard({
   task,
@@ -104,4 +104,4 @@ function TaskCard({
     </Card>
   );
 }
-export default TaskCard;
+export default memo(TaskCard);

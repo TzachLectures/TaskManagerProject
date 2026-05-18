@@ -1,17 +1,11 @@
-import useCounter from "../hooks/useCounter";
-import { Button, Typography, TextField } from "@mui/material";
-
+import GrandParent from "../components/contextExample/GrandParent";
+import { ExampleProvider } from "../providers/ExampleProvider";
 function ExamplePage() {
-  const { count, step, handleInc, handleDec, setStep } = useCounter(50, 2);
   return (
     <div>
-      <Typography>{count}</Typography>
-      <TextField
-        value={step}
-        onChange={(e) => setStep(Number(e.target.value))}
-      />
-      <Button onClick={handleInc}>+</Button>
-      <Button onClick={handleDec}>-</Button>
+      <ExampleProvider>
+        <GrandParent />
+      </ExampleProvider>
     </div>
   );
 }
