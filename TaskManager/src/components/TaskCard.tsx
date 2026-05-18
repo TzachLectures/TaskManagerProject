@@ -13,7 +13,7 @@ import type { Task } from "../types/Task";
 import ROUTES from "../router/routes";
 import EditIcon from "@mui/icons-material/Edit";
 import TaskFormDialog from "./TaskFormDialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ClearIcon from "@mui/icons-material/Clear";
 import ThumbUpIcon from "@mui/icons-material/ThumbUp";
 import ThumbDownIcon from "@mui/icons-material/ThumbDown";
@@ -22,11 +22,22 @@ interface TaskProps {
   task: Task;
   handleEditTask: (data: Task) => void;
   handleDeleteTask: (id: string) => void;
+  updateLikes: (id: string, newLikes: number) => void;
 }
-function TaskCard({ task, handleEditTask, handleDeleteTask }: TaskProps) {
+function TaskCard({
+  task,
+  handleEditTask,
+  handleDeleteTask,
+  updateLikes,
+}: TaskProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const { handleInc, handleDec, count } = useCounter();
+  const { handleInc, handleDec, count } = useCounter(task.likes);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    updateLikes(task.id, count);
+  }, [count]);
+
   return (
     <Card
       sx={{
@@ -85,7 +96,7 @@ function TaskCard({ task, handleEditTask, handleDeleteTask }: TaskProps) {
             aria-label="DisLike"
           />
         </IconButton>
-        <Typography>{count}</Typography>
+        <Typography>{task.likes}</Typography>
       </CardActions>
       {isOpen && (
         <TaskFormDialog

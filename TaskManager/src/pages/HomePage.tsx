@@ -4,43 +4,22 @@ import AddIcon from "@mui/icons-material/Add"; // וודא שהתקנת את ח�
 import CloseIcon from "@mui/icons-material/Close";
 import TaskCard from "../components/TaskCard";
 import TaskFormDialog from "../components/TaskFormDialog";
-import type { Task } from "../types/Task";
+import useTasks from "../hooks/useTasks";
 
 function HomePage() {
   const [isOpen, setIsOpen] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const {
+    tasks,
+    handleAddNewTask,
+    handleEditTask,
+    handleDeleteTask,
+    handleGetTasks,
+    updateLikes,
+  } = useTasks();
 
   useEffect(() => {
-    const savedTasks = localStorage.getItem("tasks");
-    try {
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      }
-    } catch (e) {
-      console.log("saved tasks are not valid Json");
-    }
+    handleGetTasks();
   }, []);
-
-  const handleAddNewTask = (task: Task) => {
-    const newTasks = [...tasks, { ...task, id: crypto.randomUUID() }];
-    setTasks(newTasks);
-    localStorage.setItem("tasks", JSON.stringify(newTasks));
-  };
-
-  const handleEditTask = (task: Task) => {
-    const newTasks = tasks.map((t) => (t.id === task.id ? task : t));
-    setTasks(newTasks);
-    localStorage.setItem("tasks", JSON.stringify(newTasks));
-  };
-
-  const handleDeleteTask = (id: string) => {
-    if (confirm("האם את/ה בטוח/ה שברצונך למחוק את המשימה?")) {
-      const newTasks = tasks.filter((t) => t.id !== id);
-      setTasks(newTasks);
-      localStorage.setItem("tasks", JSON.stringify(newTasks));
-    }
-  };
-
   // פונקציה שהופכת את הסטייט (מ-true ל-false ולהפך)
   const handleToggle = () => {
     setIsOpen((prev) => !prev);
@@ -57,6 +36,7 @@ function HomePage() {
           task={t}
           handleEditTask={handleEditTask}
           handleDeleteTask={handleDeleteTask}
+          updateLikes={updateLikes}
         />
       ))}
 
