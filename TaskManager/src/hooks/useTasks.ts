@@ -1,17 +1,17 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext } from "react";
 import type { Task } from "../types/Task";
-
+import { SnackContext } from "../providers/SnackProvider";
+import { editTasks, getTasks } from "../services/tasksDataService";
 function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const { raiseSnack } = useContext(SnackContext) as any;
 
   const handleGetTasks = useCallback(() => {
-    const savedTasks = localStorage.getItem("tasks");
     try {
-      if (savedTasks) {
-        setTasks(JSON.parse(savedTasks));
-      }
+      const savedTasks = getTasks();
+      setTasks(savedTasks);
     } catch (e) {
-      console.log("saved tasks are not valid Json");
+      raiseSnack("error", "התרחשה שגיאה בייבוא הנתונים");
     }
   }, []);
 
@@ -24,24 +24,27 @@ function useTasks() {
 
     setTasks((prev) => {
       const newTasks = [...prev, newTask];
-      localStorage.setItem("tasks", JSON.stringify(newTasks));
+      editTasks(newTasks);
       return newTasks;
     });
+
+    raiseSnack("success", "משימה חדשה התווספה בהצלחה");
   }, []);
 
   const handleEditTask = useCallback((task: Task) => {
     setTasks((prev) => {
       const newTasks = prev.map((t) => (t.id === task.id ? task : t));
-      localStorage.setItem("tasks", JSON.stringify(newTasks));
+      editTasks(newTasks);
       return newTasks;
     });
+    raiseSnack("success", "משימה נערכה בהצלחה");
   }, []);
 
   const handleDeleteTask = useCallback((id: string) => {
     if (confirm("האם את/ה בטוח/ה שברצונך למחוק את המשימה?")) {
       setTasks((prev) => {
         const newTasks = prev.filter((t) => t.id !== id);
-        localStorage.setItem("tasks", JSON.stringify(newTasks));
+        editTasks(newTasks);
         return newTasks;
       });
     }
@@ -54,7 +57,7 @@ function useTasks() {
           ? { ...t, likes: action === "inc" ? t.likes + 1 : t.likes - 1 }
           : t,
       );
-      localStorage.setItem("tasks", JSON.stringify(newTasks));
+      editTasks(newTasks);
       return newTasks;
     });
   }, []);

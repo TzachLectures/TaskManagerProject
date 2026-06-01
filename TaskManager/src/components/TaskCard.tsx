@@ -35,7 +35,7 @@ function TaskCard({
 }: TaskProps) {
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
-  const { isDark } = useContext<ThemeContextType>(ProjectThemeContext);
+  const { isDark } = useContext(ProjectThemeContext) as ThemeContextType;
   return (
     <Card
       sx={{
