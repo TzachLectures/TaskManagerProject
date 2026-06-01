@@ -2,9 +2,16 @@ import { useContext } from "react";
 import { ExampleContext } from "../../providers/ExampleProvider";
 
 function Child() {
-  const { something } = useContext(ExampleContext);
-  console.log(something);
-  return <div>this is child component</div>;
+  const { setSomething } = useContext(ExampleContext);
+
+  return (
+    <div>
+      <p>this is child component</p>
+      <button onClick={() => setSomething((prev) => prev + 1)}>
+        Increment
+      </button>
+    </div>
+  );
 }
 
 export default Child;

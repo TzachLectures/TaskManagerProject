@@ -10,8 +10,12 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NavItem from "../../router/NavItem";
 import ROUTES from "../../router/routes";
 import { useNavigate } from "react-router-dom";
+import { ProjectThemeContext } from "../../providers/ProjectThemeProvider";
+import { Brightness4, Brightness7 } from "@mui/icons-material";
+import { useContext } from "react";
 function Header() {
   const navigate = useNavigate();
+  const { isDark, toggleMode } = useContext(ProjectThemeContext);
   return (
     <AppBar position="static" color="primary">
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -49,6 +53,9 @@ function Header() {
           >
             Register
           </Button>
+          <IconButton onClick={toggleMode} color="inherit">
+            {isDark ? <Brightness7 /> : <Brightness4 />}
+          </IconButton>
         </Box>
       </Toolbar>
     </AppBar>
