@@ -16,11 +16,14 @@ function useTasks() {
   }, []);
 
   const handleAddNewTask = useCallback((task: Task) => {
+    const newTask: Task = {
+      ...task,
+      id: crypto.randomUUID(),
+      likes: 0,
+    };
+
     setTasks((prev) => {
-      const newTasks = [
-        ...prev,
-        { ...task, id: crypto.randomUUID(), likes: 0 },
-      ];
+      const newTasks = [...prev, newTask];
       localStorage.setItem("tasks", JSON.stringify(newTasks));
       return newTasks;
     });

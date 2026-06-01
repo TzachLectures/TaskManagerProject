@@ -1,7 +1,12 @@
 import { createContext, useCallback, useState, type ReactNode } from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 
-const ProjectThemeContext = createContext();
+interface ThemeContextType {
+  isDark: boolean;
+  toggleMode: () => void;
+}
+
+const ProjectThemeContext = createContext<null | ThemeContextType>(null);
 
 function ProjectThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(false);
@@ -21,4 +26,4 @@ function ProjectThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export { ProjectThemeProvider, ProjectThemeContext };
+export { ProjectThemeProvider, ProjectThemeContext, ThemeContextType };
