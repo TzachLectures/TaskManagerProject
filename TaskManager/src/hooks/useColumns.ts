@@ -1,8 +1,13 @@
 import { useState, useCallback, useContext } from "react";
 import type { Column } from "../types/Column";
 import { SnackContext } from "../providers/SnackProvider";
-import { editColumns, getColumns } from "../services/columnsDataService";
-import { getTasks } from "../services/tasksDataService";
+import {
+  addColumn,
+  getColumns,
+  updateColumn,
+  deleteColumn,
+} from "../services/columnsDataServiceFireBase"; // ודא שהקובץ קיים והנתיב תקין
+import { getTasks } from "../services/tasksDataServiceFireBase"; // הקריאה החדשה למשימות
 
 function useColumns() {
   const [columns, setColumns] = useState<Column[]>([]);
@@ -13,62 +18,72 @@ function useColumns() {
     ) => void;
   };
 
-  const handleGetColumns = useCallback(() => {
+  // READ
+  const handleGetColumns = useCallback(async () => {
     try {
-      const savedColumns = getColumns();
+      const savedColumns = await getColumns();
       setColumns(savedColumns);
     } catch {
       raiseSnack("error", "התרחשה שגיאה בייבוא הנתונים");
     }
   }, [raiseSnack]);
 
+  // CREATE
   const handleAddColumn = useCallback(
-    (column: Pick<Column, "name">) => {
-      const newColumn: Column = {
-        ...column,
-        id: crypto.randomUUID(),
-      };
+    async (column: Pick<Column, "name">) => {
+      try {
+        // המתנה ליצירת העמודה וקבלת ה-ID מפיירבייס
+        const newId = await addColumn(column);
 
-      setColumns((prev) => {
-        const newColumns = [...prev, newColumn];
-        editColumns(newColumns);
-        return newColumns;
-      });
+        const newColumn: Column = {
+          ...column,
+          id: newId,
+        };
 
-      raiseSnack("success", "עמודה חדשה התווספה בהצלחה");
-    },
-    [raiseSnack],
-  );
-
-  const handleEditColumn = useCallback(
-    (column: Column) => {
-      setColumns((prev) => {
-        const newColumns = prev.map((c) => (c.id === column.id ? column : c));
-        editColumns(newColumns);
-        return newColumns;
-      });
-      raiseSnack("success", "עמודה נערכה בהצלחה");
-    },
-    [raiseSnack],
-  );
-
-  const handleDeleteColumn = useCallback(
-    (id: string) => {
-      const tasks = getTasks();
-      if (tasks.some((t: { column: string }) => t.column === id)) {
-        raiseSnack(
-          "warning",
-          "שים לב! לא ניתן למחוק עמודה שמכילה משימות",
-        );
-        return;
+        setColumns((prev) => [...prev, newColumn]);
+        raiseSnack("success", "עמודה חדשה התווספה בהצלחה");
+      } catch (error) {
+        raiseSnack("error", "התרחשה שגיאה ביצירת העמודה");
       }
+    },
+    [raiseSnack],
+  );
 
-      setColumns((prev) => {
-        const newColumns = prev.filter((c) => c.id !== id);
-        editColumns(newColumns);
-        return newColumns;
-      });
-      raiseSnack("success", "עמודה נמחקה בהצלחה");
+  // UPDATE
+  const handleEditColumn = useCallback(
+    async (column: Column) => {
+      if (!column.id) return;
+
+      try {
+        await updateColumn(column.id, column);
+        setColumns((prev) =>
+          prev.map((c) => (c.id === column.id ? column : c)),
+        );
+        raiseSnack("success", "עמודה נערכה בהצלחה");
+      } catch (error) {
+        raiseSnack("error", "שגיאה בעריכת העמודה");
+      }
+    },
+    [raiseSnack],
+  );
+
+  // DELETE
+  const handleDeleteColumn = useCallback(
+    async (id: string) => {
+      try {
+        // משיכת המשימות מפיירבייס כדי לבדוק אם העמודה בשימוש
+        const tasks = await getTasks();
+        if (tasks.some((t) => t.column === id)) {
+          raiseSnack("warning", "שים לב! לא ניתן למחוק עמודה שמכילה משימות");
+          return;
+        }
+
+        await deleteColumn(id);
+        setColumns((prev) => prev.filter((c) => c.id !== id));
+        raiseSnack("success", "עמודה נמחקה בהצלחה");
+      } catch (error) {
+        raiseSnack("error", "שגיאה במחיקת העמודה");
+      }
     },
     [raiseSnack],
   );
