@@ -9,6 +9,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import type { Column } from "../types/Column";
 import type { Task } from "../types/Task";
 import ROUTES from "../router/routes";
 import EditIcon from "@mui/icons-material/Edit";
@@ -23,12 +24,14 @@ import {
 } from "../providers/ProjectThemeProvider";
 interface TaskProps {
   task: Task;
+  columns: Column[];
   handleEditTask: (data: Task) => void;
   handleDeleteTask: (id: string) => void;
   updateLikes: (id: string, action: "inc" | "dec") => void;
 }
 function TaskCard({
   task,
+  columns,
   handleEditTask,
   handleDeleteTask,
   updateLikes,
@@ -101,6 +104,7 @@ function TaskCard({
           open={isOpen}
           onClose={() => setIsOpen(false)}
           initialValues={task}
+          columns={columns}
           handleSave={handleEditTask}
         />
       )}

@@ -1,13 +1,34 @@
-import { useEffect, useState, memo } from "react";
-import { Box, Fab, Typography } from "@mui/material";
-import AddIcon from "@mui/icons-material/Add"; // וודא שהתקנת את חבילת האייקונים
+import { useEffect, useState, memo, useContext, useMemo } from "react";
+import {
+  Box,
+  Fab,
+  Typography,
+  Button,
+  Paper,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import CloseIcon from "@mui/icons-material/Close";
-import TaskCard from "../components/TaskCard";
+import ViewColumnIcon from "@mui/icons-material/ViewColumn";
 import TaskFormDialog from "../components/TaskFormDialog";
+import ColumnFormDialog from "../components/ColumnFormDialog";
+import KanbanBoard from "../components/KanbanBoard";
 import useTasks from "../hooks/useTasks";
+import useColumns from "../hooks/useColumns";
+import { SnackContext } from "../providers/SnackProvider";
+import type { Column } from "../types/Column";
 
 function HomePage() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
+  const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
+  const [editingColumn, setEditingColumn] = useState<Column | undefined>();
+
+  const { raiseSnack } = useContext(SnackContext) as {
+    raiseSnack: (
+      color: "success" | "error" | "warning" | "info",
+      message: string,
+    ) => void;
+  };
+
   const {
     tasks,
     handleAddNewTask,
@@ -15,15 +36,54 @@ function HomePage() {
     handleDeleteTask,
     handleGetTasks,
     updateLikes,
+    moveTaskToColumn,
   } = useTasks();
+
+  const {
+    columns,
+    handleGetColumns,
+    handleAddColumn,
+    handleEditColumn,
+    handleDeleteColumn,
+  } = useColumns();
+
+  const columnIds = useMemo(
+    () => new Set(columns.map((c) => c.id)),
+    [columns],
+  );
 
   useEffect(() => {
     handleGetTasks();
-  }, []);
-  // פונקציה שהופכת את הסטייט (מ-true ל-false ולהפך)
-  const handleToggle = () => {
-    setIsOpen((prev) => !prev);
+    handleGetColumns();
+  }, [handleGetTasks, handleGetColumns]);
+
+  const handleTaskFabClick = () => {
+    if (columns.length === 0) {
+      raiseSnack("warning", "יש ליצור לפחות עמודה אחת לפני הוספת משימה");
+      return;
+    }
+    setIsTaskDialogOpen((prev) => !prev);
   };
+
+  const handleOpenAddColumn = () => {
+    setEditingColumn(undefined);
+    setIsColumnDialogOpen(true);
+  };
+
+  const handleOpenEditColumn = (column: Column) => {
+    setEditingColumn(column);
+    setIsColumnDialogOpen(true);
+  };
+
+  const handleColumnSave = (data: Column | Pick<Column, "name">) => {
+    if ("id" in data) {
+      handleEditColumn(data);
+    } else {
+      handleAddColumn(data);
+    }
+  };
+
+  const hasColumns = columns.length > 0;
 
   return (
     <Box sx={{ p: 3, pb: 10 }}>
@@ -31,39 +91,96 @@ function HomePage() {
         Home page
       </Typography>
 
-      {tasks?.length > 0 ? (
-        tasks.map((t) => (
-          <TaskCard
-            key={t.id}
-            task={t}
+      {!hasColumns ? (
+        <Box sx={{ textAlign: "center", py: 6 }}>
+          <Typography variant="h6" gutterBottom>
+            אין עמודות — צור עמודה ראשונה כדי להתחיל
+          </Typography>
+          <Button
+            variant="contained"
+            startIcon={<ViewColumnIcon />}
+            onClick={handleOpenAddColumn}
+            sx={{ mt: 2 }}
+          >
+            צור עמודה ראשונה
+          </Button>
+        </Box>
+      ) : (
+        <>
+          <KanbanBoard
+            columns={columns}
+            tasks={tasks}
+            columnIds={columnIds}
+            onMoveTask={moveTaskToColumn}
+            onEditColumn={handleOpenEditColumn}
+            onDeleteColumn={handleDeleteColumn}
             handleEditTask={handleEditTask}
             handleDeleteTask={handleDeleteTask}
             updateLikes={updateLikes}
           />
-        ))
-      ) : (
-        <Typography>לא קיימות משימות להצגה</Typography>
+
+          <Paper
+            elevation={1}
+            sx={{
+              mt: 2,
+              p: 2,
+              display: "inline-flex",
+              alignItems: "center",
+              cursor: "pointer",
+              border: 1,
+              borderStyle: "dashed",
+              borderColor: "divider",
+            }}
+            onClick={handleOpenAddColumn}
+          >
+            <ViewColumnIcon sx={{ mr: 1 }} color="action" />
+            <Typography color="text.secondary">+ הוסף עמודה</Typography>
+          </Paper>
+        </>
       )}
 
-      {/* כפתור ה-FAB של MUI */}
       <Fab
-        color={isOpen ? "secondary" : "primary"}
-        aria-label="add"
-        onClick={handleToggle}
+        color="secondary"
+        aria-label="add column"
+        onClick={handleOpenAddColumn}
         sx={{
           position: "fixed",
           bottom: 16,
-          right: 16,
+          right: hasColumns ? 88 : 16,
         }}
       >
-        {isOpen ? <CloseIcon /> : <AddIcon />}
+        <ViewColumnIcon />
       </Fab>
 
-      {/* תצוגה מותנית לפי הסטייט */}
-      {isOpen && (
+      {hasColumns && (
+        <Fab
+          color={isTaskDialogOpen ? "secondary" : "primary"}
+          aria-label="add task"
+          onClick={handleTaskFabClick}
+          sx={{
+            position: "fixed",
+            bottom: 16,
+            right: 16,
+          }}
+        >
+          {isTaskDialogOpen ? <CloseIcon /> : <AddIcon />}
+        </Fab>
+      )}
+
+      {isColumnDialogOpen && (
+        <ColumnFormDialog
+          open={isColumnDialogOpen}
+          onClose={() => setIsColumnDialogOpen(false)}
+          initialValues={editingColumn}
+          handleSave={handleColumnSave}
+        />
+      )}
+
+      {isTaskDialogOpen && hasColumns && (
         <TaskFormDialog
-          open={isOpen}
-          onClose={() => setIsOpen(false)}
+          open={isTaskDialogOpen}
+          onClose={() => setIsTaskDialogOpen(false)}
+          columns={columns}
           handleSave={handleAddNewTask}
         />
       )}

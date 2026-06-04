@@ -7,7 +7,7 @@ function Child() {
   return (
     <div>
       <p>this is child component</p>
-      <button onClick={() => setSomething((prev) => prev + 1)}>
+      <button onClick={() => setSomething((prev: number) => prev + 1)}>
         Increment
       </button>
     </div>

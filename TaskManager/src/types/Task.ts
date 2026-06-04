@@ -6,4 +6,5 @@ export type Task = {
   dueDate: Date;
   priority: "high" | "medium" | "low";
   likes: number;
+  column: string;
 };

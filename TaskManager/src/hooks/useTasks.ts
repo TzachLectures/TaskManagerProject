@@ -15,20 +15,41 @@ function useTasks() {
     }
   }, []);
 
-  const handleAddNewTask = useCallback((task: Task) => {
-    const newTask: Task = {
-      ...task,
-      id: crypto.randomUUID(),
-      likes: 0,
-    };
+  const handleAddNewTask = useCallback(
+    (task: Task) => {
+      if (!task.column) {
+        raiseSnack("error", "יש לבחור עמודה למשימה");
+        return;
+      }
 
+      const newTask: Task = {
+        ...task,
+        id: crypto.randomUUID(),
+        likes: 0,
+      };
+
+      setTasks((prev) => {
+        const newTasks = [...prev, newTask];
+        editTasks(newTasks);
+        return newTasks;
+      });
+
+      raiseSnack("success", "משימה חדשה התווספה בהצלחה");
+    },
+    [raiseSnack],
+  );
+
+  const moveTaskToColumn = useCallback((taskId: string, columnId: string) => {
     setTasks((prev) => {
-      const newTasks = [...prev, newTask];
+      const task = prev.find((t) => t.id === taskId);
+      if (!task || task.column === columnId) return prev;
+
+      const newTasks = prev.map((t) =>
+        t.id === taskId ? { ...t, column: columnId } : t,
+      );
       editTasks(newTasks);
       return newTasks;
     });
-
-    raiseSnack("success", "משימה חדשה התווספה בהצלחה");
   }, []);
 
   const handleEditTask = useCallback((task: Task) => {
@@ -69,6 +90,7 @@ function useTasks() {
     handleDeleteTask,
     handleGetTasks,
     updateLikes,
+    moveTaskToColumn,
   };
 }
 

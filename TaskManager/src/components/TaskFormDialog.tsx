@@ -9,12 +9,14 @@ import {
   Stack,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
+import type { Column } from "../types/Column";
 import type { Task } from "../types/Task";
 
 interface TaskFormDialogProps {
   open: boolean;
   onClose: () => void;
   initialValues?: Task;
+  columns: Column[];
   handleSave: (data: Task) => void;
 }
 
@@ -22,6 +24,7 @@ function TaskFormDialog({
   open,
   onClose,
   initialValues,
+  columns,
   handleSave,
 }: TaskFormDialogProps) {
   const { control, handleSubmit, reset } = useForm<Task>({
@@ -31,6 +34,7 @@ function TaskFormDialog({
       status: "pending",
       dueDate: new Date(),
       priority: "medium",
+      column: columns[0]?.id ?? "",
     },
   });
 
@@ -79,6 +83,28 @@ function TaskFormDialog({
                   multiline
                   rows={3}
                 />
+              )}
+            />
+
+            <Controller
+              name="column"
+              control={control}
+              rules={{ required: "יש לבחור עמודה" }}
+              render={({ field, fieldState: { error } }) => (
+                <TextField
+                  {...field}
+                  select
+                  label="עמודה"
+                  fullWidth
+                  error={!!error}
+                  helperText={error?.message}
+                >
+                  {columns.map((col) => (
+                    <MenuItem key={col.id} value={col.id}>
+                      {col.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
               )}
             />
 
