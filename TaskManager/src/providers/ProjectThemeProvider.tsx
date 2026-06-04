@@ -26,4 +26,4 @@ function ProjectThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
-export { ProjectThemeProvider, ProjectThemeContext, ThemeContextType };
+export { ProjectThemeProvider, ProjectThemeContext, type ThemeContextType };

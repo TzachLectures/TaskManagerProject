@@ -31,15 +31,19 @@ function HomePage() {
         Home page
       </Typography>
 
-      {tasks.map((t) => (
-        <TaskCard
-          key={t.id}
-          task={t}
-          handleEditTask={handleEditTask}
-          handleDeleteTask={handleDeleteTask}
-          updateLikes={updateLikes}
-        />
-      ))}
+      {tasks?.length > 0 ? (
+        tasks.map((t) => (
+          <TaskCard
+            key={t.id}
+            task={t}
+            handleEditTask={handleEditTask}
+            handleDeleteTask={handleDeleteTask}
+            updateLikes={updateLikes}
+          />
+        ))
+      ) : (
+        <Typography>לא קיימות משימות להצגה</Typography>
+      )}
 
       {/* כפתור ה-FAB של MUI */}
       <Fab

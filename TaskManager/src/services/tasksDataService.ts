@@ -7,6 +7,8 @@ const getTasks = () => {
   try {
     if (savedTasks) {
       return JSON.parse(savedTasks);
+    } else {
+      return [];
     }
   } catch (e) {
     console.log("saved tasks are not valid Json");
