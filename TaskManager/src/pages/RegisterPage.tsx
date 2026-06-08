@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
 import { useUser } from "../providers/UserProvider";
+import { Navigate } from "react-router-dom";
+import ROUTES from "../router/routes";
 
 const userSchema = Joi.object({
   firstName: Joi.string().min(2).max(50).required().messages({
@@ -58,13 +60,16 @@ function RegisterPage() {
     resolver: joiResolver(userSchema),
   });
 
-  const { signup } = useUser();
+  const { signup, user } = useUser();
 
   const onSubmit = (data: any) => {
     signup(data.email, data.password);
     console.log("Form Data:", data);
   };
 
+  if (user) {
+    return <Navigate to={ROUTES.HOME} replace />;
+  }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box

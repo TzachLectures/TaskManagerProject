@@ -3,6 +3,8 @@ import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
 import { useUser } from "../providers/UserProvider";
+import ROUTES from "../router/routes";
+import { Navigate } from "react-router-dom";
 
 // 1. הגדרת סכימת הולידציה
 const loginSchema = Joi.object({
@@ -31,12 +33,15 @@ function LoginPage() {
   } = useForm({
     resolver: joiResolver(loginSchema),
   });
-  const { login } = useUser();
-  const onSubmit = (data: any) => {
-    login(data.email, data.password);
+  const { login, user } = useUser();
+  const onSubmit = async (data: any) => {
+    await login(data.email, data.password);
     console.log("Form Data:", data);
   };
 
+  if (user) {
+    return <Navigate to={ROUTES.HOME} replace />;
+  }
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Box
