@@ -6,6 +6,7 @@ import {
   doc,
   updateDoc,
   deleteDoc,
+  getDoc,
 } from "firebase/firestore";
 import app from "../config/firebase"; // ודא שהנתיב תואם למיקום הקובץ שלך
 import type { Task } from "../types/Task";
@@ -63,5 +64,27 @@ export const deleteTask = async (id: string): Promise<void> => {
   } catch (error) {
     console.error("Error deleting task: ", error);
     throw error;
+  }
+};
+
+export const getTaskById = async (
+  id: string,
+): Promise<Task | null | undefined> => {
+  // 1. יצירת רפרנס (מצביע) למסמך הספציפי
+  const docRef = doc(db, tasksCollectionName, id);
+
+  try {
+    // 2. שליפת הנתונים מהשרת (פעולה אסינכרונית)
+    const docSnap = await getDoc(docRef);
+
+    // 3. בדיקה האם המסמך אכן קיים במסד הנתונים
+    if (docSnap.exists()) {
+      return docSnap.data() as Task; // מחזיר את האובייקט כדי שנוכל לעבוד איתו
+    } else {
+      console.log("No such document!");
+      return null; // ה-ID לא נמצא
+    }
+  } catch (error) {
+    console.error("Error fetching document:", error);
   }
 };
