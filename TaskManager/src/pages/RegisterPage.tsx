@@ -2,6 +2,7 @@ import { Box, Button, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
+import { useUser } from "../providers/UserProvider";
 
 const userSchema = Joi.object({
   firstName: Joi.string().min(2).max(50).required().messages({
@@ -57,7 +58,10 @@ function RegisterPage() {
     resolver: joiResolver(userSchema),
   });
 
+  const { signup } = useUser();
+
   const onSubmit = (data: any) => {
+    signup(data.email, data.password);
     console.log("Form Data:", data);
   };
 

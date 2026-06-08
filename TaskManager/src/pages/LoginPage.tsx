@@ -2,6 +2,7 @@ import { Box, Button, TextField } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { joiResolver } from "@hookform/resolvers/joi";
 import Joi from "joi";
+import { useUser } from "../providers/UserProvider";
 
 // 1. הגדרת סכימת הולידציה
 const loginSchema = Joi.object({
@@ -30,8 +31,9 @@ function LoginPage() {
   } = useForm({
     resolver: joiResolver(loginSchema),
   });
-
+  const { login } = useUser();
   const onSubmit = (data: any) => {
+    login(data.email, data.password);
     console.log("Form Data:", data);
   };
 

@@ -16,11 +16,15 @@ import {
 } from "../../providers/ProjectThemeProvider";
 import { Brightness4, Brightness7 } from "@mui/icons-material";
 import { useContext } from "react";
+import { useUser } from "../../providers/UserProvider";
 function Header() {
   const navigate = useNavigate();
   const { isDark, toggleMode } = useContext(
     ProjectThemeContext,
   ) as ThemeContextType;
+
+  const { user, logout } = useUser();
+
   return (
     <AppBar position="static" color="primary">
       <Toolbar sx={{ justifyContent: "space-between" }}>
@@ -42,22 +46,37 @@ function Header() {
             <NavItem to={ROUTES.ABOUT} label="About" />
             <NavItem to={ROUTES.CONTACT} label="Contact" />
           </Box>
-          <Button
-            onClick={() => navigate(ROUTES.LOGIN)}
-            variant="outlined"
-            color="inherit"
-            sx={{ ml: 2 }}
-          >
-            Log In
-          </Button>
-          <Button
-            onClick={() => navigate(ROUTES.REGISTER)}
-            variant="outlined"
-            color="inherit"
-            sx={{ ml: 2 }}
-          >
-            Register
-          </Button>
+          {user ? (
+            <>
+              <Button
+                onClick={() => logout()}
+                variant="outlined"
+                color="inherit"
+                sx={{ ml: 2 }}
+              >
+                Log Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={() => navigate(ROUTES.LOGIN)}
+                variant="outlined"
+                color="inherit"
+                sx={{ ml: 2 }}
+              >
+                Log In
+              </Button>
+              <Button
+                onClick={() => navigate(ROUTES.REGISTER)}
+                variant="outlined"
+                color="inherit"
+                sx={{ ml: 2 }}
+              >
+                Register
+              </Button>
+            </>
+          )}
           <IconButton onClick={toggleMode} color="inherit">
             {isDark ? <Brightness7 /> : <Brightness4 />}
           </IconButton>
