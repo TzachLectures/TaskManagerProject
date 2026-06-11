@@ -10,15 +10,24 @@ import {
 
 function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading,setIsLoading] = useState(true);
+  const [error,setError] = useState<string | null>(null);
+
   const { raiseSnack } = useContext(SnackContext) as any;
 
   // READ
   const handleGetTasks = useCallback(async () => {
+    setIsLoading(true);
     try {
       const savedTasks = await getTasks();
       setTasks(savedTasks);
     } catch (e) {
       raiseSnack("error", "התרחשה שגיאה בייבוא הנתונים");
+      setError("Error fetching tasks");
+    }
+    finally {     
+     setIsLoading(false);
+
     }
   }, [raiseSnack]);
 
@@ -136,6 +145,8 @@ function useTasks() {
     handleGetTasks,
     updateLikes,
     moveTaskToColumn,
+    isLoading,
+    error,
   };
 }
 

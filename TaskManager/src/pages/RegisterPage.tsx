@@ -63,7 +63,7 @@ function RegisterPage() {
   const { signup, user } = useUser();
 
   const onSubmit = (data: any) => {
-    signup(data.email, data.password);
+    signup(data);
     console.log("Form Data:", data);
   };
 

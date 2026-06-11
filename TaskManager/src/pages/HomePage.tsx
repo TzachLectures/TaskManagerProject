@@ -16,6 +16,7 @@ import useTasks from "../hooks/useTasks";
 import useColumns from "../hooks/useColumns";
 import { SnackContext } from "../providers/SnackProvider";
 import type { Column } from "../types/Column";
+import CircularProgress from "@mui/material/CircularProgress";
 
 function HomePage() {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
@@ -37,6 +38,8 @@ function HomePage() {
     handleGetTasks,
     updateLikes,
     moveTaskToColumn,
+    isLoading,
+    error,
   } = useTasks();
 
   const {
@@ -84,6 +87,24 @@ function HomePage() {
   };
 
   const hasColumns = columns.length > 0;
+
+if(error) {
+  return (
+    <Box sx={{ p: 3 }}>
+      <Typography variant="h6" color="error">
+        {error}
+      </Typography>
+    </Box>
+  );
+}
+
+if (isLoading) {
+  return (
+    <Box sx={{ p: 3 }}>
+      <CircularProgress />
+    </Box>
+  );
+}
 
   return (
     <Box sx={{ p: 3, pb: 10 }}>

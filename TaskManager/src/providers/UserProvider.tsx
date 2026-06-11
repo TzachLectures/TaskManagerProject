@@ -14,15 +14,24 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
+import {type User } from "../types/User";
+import { addUser ,getUserById} from "../services/usersDataServiceFireBase";
 
-const UserContext = createContext<any>(null);
+const UserContext = createContext<{
+  user: User | null;
+  signup: (userData: any) => Promise<void>;
+  login: (email: string, password: string) => Promise<void>;
+  logout: () => Promise<void>;
+} | undefined>(undefined);
 
 function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
   const auth = getAuth(app);
   const signup = useCallback(
-    async (email: string, password: string) => {
-      await createUserWithEmailAndPassword(auth, email, password);
+    async ({email, password,...userData}: {email: string; password: string; userData:any}) => {
+     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+     // Add additional user data to Firestore
+     await addUser({ id: userCredential.user.uid,email: userCredential.user.email||"",...userData } as any);
     },
     [auth],
   );
@@ -37,12 +46,20 @@ function UserProvider({ children }: { children: ReactNode }) {
   }, [auth]);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if(currentUser) {
+      const userData = await getUserById(currentUser.uid);
+      if(userData) {
+        setUser(userData);
+      }
+      else {
       setUser(currentUser as any);
-    });
+      }
+    }});
 
     return unsubscribe;
   }, []);
+console.log(user);
 
   return (
     <UserContext.Provider value={{ user, signup, login, logout }}>
