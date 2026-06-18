@@ -12,7 +12,16 @@ function useCounter(initialValue = 0, initialStep = 1) {
     setCount((prev) => prev - step);
   }, [step]);
 
-  return { count, step, handleInc, handleDec, setStep };
+const setStepValue = useCallback((newStep: number) => {
+    setStep(newStep);
+  }
+, []);
+
+const resetCount = useCallback(() => {
+    setCount(initialValue);
+  }, [initialValue]);
+
+  return { count, step, handleInc, handleDec, setStepValue, resetCount };
 }
 
 export default useCounter;
