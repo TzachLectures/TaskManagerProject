@@ -41,6 +41,8 @@ function TaskCard({
   const navigate = useNavigate();
   const { isDark } = useContext(ProjectThemeContext) as ThemeContextType;
   const {user}=useUser()
+
+
   return (
     <Card
       sx={{
@@ -91,7 +93,8 @@ function TaskCard({
             onClick={() => updateLikes(task.id, "inc")}
             aria-label="Like"
           />
-        </IconButton>
+        </IconButton>.        <Typography>{task.likes.length}</Typography>
+
         <IconButton>
           <ThumbDownIcon
             sx={{ color: isDark ? "#f48fb1" : "#d32f2f" }}
@@ -99,7 +102,8 @@ function TaskCard({
             aria-label="DisLike"
           />
         </IconButton>
-        <Typography>{task.likes}</Typography>
+                <Typography>{task.dislikes.length}</Typography>
+
       </CardActions>}
       {isOpen && (
         <TaskFormDialog

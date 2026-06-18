@@ -5,7 +5,8 @@ export type Task = {
   status: "completed" | "pending" | "in-progress";
   dueDate: Date;
   priority: "high" | "medium" | "low";
-  likes: number;
+  likes: string[];
+  dislikes:string[];
   column: string;
   userId:string
 };

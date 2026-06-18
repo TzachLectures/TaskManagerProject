@@ -6,6 +6,7 @@ import {
   getTasks,
   updateTask,
   deleteTask,
+  getTaskById,
 } from "../services/tasksDataServiceFireBase"; // ודא שהנתיב תקין
 import { useUser } from "../providers/UserProvider";
 
@@ -43,7 +44,8 @@ function useTasks() {
 
       const newTaskData = {
         ...task,
-        likes: 0,
+        likes: [],
+        dislikes: [],
         userId: user?.id ?? "unknown", // הוספת userId
       };
 
@@ -121,20 +123,30 @@ function useTasks() {
 
   // UPDATE - Likes (Optimistic Update)
   const updateLikes = useCallback(
-    (id: string, action: "inc" | "dec") => {
+    async (id: string, action: "inc" | "dec") => {
+
+      const updatedTask = await getTaskById(id);
       setTasks((prev) => {
-        const task = prev.find((t) => t.id === id);
+        const task = updatedTask
         if (!task) return prev;
-
-        const newLikes = action === "inc" ? task.likes + 1 : task.likes - 1;
-
+        const field = action==="inc" ? "likes" : "dislikes";
+        let newLikes = [...task[field]];
+        if(user){
+        let isTheUserAlreadyExists = newLikes.includes(user?.id);
+        if (!isTheUserAlreadyExists) {
+          newLikes.push(user?.id);
+        } else {
+          newLikes = newLikes.filter((likeId) => likeId !== user?.id);
+        }
+        }
         // עדכון פיירבייס ברקע
-        updateTask(id, { likes: newLikes }).catch(() => {
+        updateTask(id, { [field]: newLikes }).catch(() => {
           raiseSnack("error", "שגיאה בעדכון הלייקים");
         });
 
         // עדכון UI מידי
-        return prev.map((t) => (t.id === id ? { ...t, likes: newLikes } : t));
+        return prev.map((t) => (t.id === id ? { ...t, [field]: newLikes } : t));
+       
       });
     },
     [raiseSnack],
