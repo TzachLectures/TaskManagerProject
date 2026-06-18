@@ -55,7 +55,11 @@ function UserProvider({ children }: { children: ReactNode }) {
       else {
       setUser(currentUser as any);
       }
-    }});
+    }
+    else{
+      setUser(null)
+    }
+  });
 
     return unsubscribe;
   }, []);

@@ -17,12 +17,12 @@ import useColumns from "../hooks/useColumns";
 import { SnackContext } from "../providers/SnackProvider";
 import type { Column } from "../types/Column";
 import CircularProgress from "@mui/material/CircularProgress";
-
+import { useUser } from "../providers/UserProvider";
 function HomePage() {
   const [isTaskDialogOpen, setIsTaskDialogOpen] = useState(false);
   const [isColumnDialogOpen, setIsColumnDialogOpen] = useState(false);
   const [editingColumn, setEditingColumn] = useState<Column | undefined>();
-
+const {user}=useUser()
   const { raiseSnack } = useContext(SnackContext) as {
     raiseSnack: (
       color: "success" | "error" | "warning" | "info",
@@ -173,7 +173,7 @@ if (isLoading) {
         <ViewColumnIcon />
       </Fab>
 
-      {hasColumns && (
+      {hasColumns && user&& (
         <Fab
           color={isTaskDialogOpen ? "secondary" : "primary"}
           aria-label="add task"

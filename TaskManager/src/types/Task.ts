@@ -7,4 +7,5 @@ export type Task = {
   priority: "high" | "medium" | "low";
   likes: number;
   column: string;
+  userId:string
 };

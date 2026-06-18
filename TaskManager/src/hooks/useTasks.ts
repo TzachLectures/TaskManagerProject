@@ -7,6 +7,7 @@ import {
   updateTask,
   deleteTask,
 } from "../services/tasksDataServiceFireBase"; // ודא שהנתיב תקין
+import { useUser } from "../providers/UserProvider";
 
 function useTasks() {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -14,6 +15,7 @@ function useTasks() {
   const [error,setError] = useState<string | null>(null);
 
   const { raiseSnack } = useContext(SnackContext) as any;
+  const {user}=useUser()
 
   // READ
   const handleGetTasks = useCallback(async () => {
@@ -42,6 +44,7 @@ function useTasks() {
       const newTaskData = {
         ...task,
         likes: 0,
+        userId: user?.id ?? "unknown", // הוספת userId
       };
 
       try {

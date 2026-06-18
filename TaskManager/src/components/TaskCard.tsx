@@ -22,6 +22,7 @@ import {
   ProjectThemeContext,
   type ThemeContextType,
 } from "../providers/ProjectThemeProvider";
+import { useUser } from "../providers/UserProvider";
 interface TaskProps {
   task: Task;
   columns: Column[];
@@ -39,6 +40,7 @@ function TaskCard({
   const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const { isDark } = useContext(ProjectThemeContext) as ThemeContextType;
+  const {user}=useUser()
   return (
     <Card
       sx={{
@@ -72,7 +74,7 @@ function TaskCard({
           />
         </Box>
       </CardActionArea>
-      <CardActions>
+     {user&& <CardActions>
         <IconButton onClick={() => setIsOpen(true)} aria-label="Edit task">
           <EditIcon />
         </IconButton>
@@ -98,7 +100,7 @@ function TaskCard({
           />
         </IconButton>
         <Typography>{task.likes}</Typography>
-      </CardActions>
+      </CardActions>}
       {isOpen && (
         <TaskFormDialog
           open={isOpen}
