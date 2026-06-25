@@ -5,11 +5,14 @@ import { ProjectThemeProvider } from "./providers/ProjectThemeProvider";
 import { SnackProvider } from "./providers/SnackProvider";
 import { UserProvider } from "./providers/UserProvider";
 import { QueryClient,QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import { store } from "./store";
 
 function App() {
   const queryClient = new QueryClient();
   return (
     <>
+    <Provider store={store}>
       <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <UserProvider>
@@ -23,6 +26,7 @@ function App() {
         </UserProvider>
         </QueryClientProvider>
       </BrowserRouter>
+    </Provider>
     </>
   );
 }
